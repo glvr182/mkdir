@@ -9,19 +9,22 @@ Create the DIRECTORY(ies), if they do not already exist.
 Mandatory arguments to long options are mandatory for short options too.
   -m, --mode [MODE] set file mode (as in chmod), not a=rwx - umask
   -p, --parents     no error if existing, make parent directories as needed
+  -v, --verbose     print a message for each created directory
 ";
 
 fn main() -> std::io::Result<()> {
     let args: Vec<String> = env::args().collect();
-    let mut targets: Vec<String> = Default::default();
-    let mut parents = false;
-    let mut mode_checking = false;
-    let mut mode: u32 = 0;
 
     if args.len() == 1 {
         println!("{}", HELP);
         return Ok(());
     }
+
+    let mut targets: Vec<String> = Default::default();
+    let mut parents = false;
+    let mut mode_checking = false;
+    let mut mode: u32 = 0;
+    let mut verbose = false;
 
     for i in 1..args.len() {
         match args[i].as_str() {
@@ -29,6 +32,8 @@ fn main() -> std::io::Result<()> {
             "--parents" => parents = true,
             "-m" => mode_checking = true,
             "--mode" => mode_checking = true,
+            "-v" => verbose = true,
+            "--verbose" => verbose = true,
             _ => {
                 if args[i].to_string().starts_with("-") {
                     println!("{}", HELP);
@@ -70,6 +75,9 @@ fn main() -> std::io::Result<()> {
         if mode != 0 {
             let perms = unix::PermissionsExt::from_mode(mode);
             fs::set_permissions(i.to_string(), perms)?;
+        }
+        if verbose {
+            println!("mkdir: created directory '{}'", i);
         }
     }
 
