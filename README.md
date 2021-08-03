@@ -5,5 +5,5 @@ Rust implementation of mkdir
 ## Features
 - [x] Simple folder creation
 - [x] Parent folder creation
-- [ ] Creating folder with mode option
+- [x] Creating folder with mode option
 - [ ] Setting SELinux contexts
