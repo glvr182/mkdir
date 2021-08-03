@@ -10,6 +10,7 @@ Mandatory arguments to long options are mandatory for short options too.
   -m, --mode [MODE] set file mode (as in chmod), not a=rwx - umask
   -p, --parents     no error if existing, make parent directories as needed
   -v, --verbose     print a message for each created directory
+  -h, --help        display this help and exit
 ";
 
 fn main() -> std::io::Result<()> {
@@ -34,22 +35,28 @@ fn main() -> std::io::Result<()> {
             "--mode" => mode_checking = true,
             "-v" => verbose = true,
             "--verbose" => verbose = true,
+            "--help" => {
+                return printhelp()
+            }
+            "-h" => {
+                return printhelp()
+            }
             _ => {
                 if args[i].to_string().starts_with("-") {
                     println!("{}", HELP);
-                    return Ok(());
+                    return Ok(())
                 }
                 if mode_checking {
                     match u32::from_str_radix(&args[i], 8) {
                         Ok(x) => {
                             if x > 511 {
                                 eprintln!("mkdir: invalid mode '{}'", args[i]);
-                                return Ok(());
+                                return Ok(())
                             }
                             mode = x;
                         }
                         Err(e) => {
-                            eprintln!("{}", e)
+                            eprintln!("{}", e);
                         }
                     }
                     mode_checking = false;
@@ -81,5 +88,10 @@ fn main() -> std::io::Result<()> {
         }
     }
 
+    Ok(())
+}
+
+fn printhelp() -> std::io::Result<()> {
+    println!("{}", HELP);
     Ok(())
 }
